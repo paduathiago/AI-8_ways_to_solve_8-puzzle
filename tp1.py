@@ -80,8 +80,19 @@ def bfs(root_node):
     return None
 
 def print_result(root_node, is_there_print=False):
+    operations = queue.LifoQueue()
     node = bfs(root_node)
-    print(node.cost)
+    total_cost = node.cost
+    
+    if is_there_print:
+        while node != None:
+            operations.put(node)
+            node = node.parent
+        while not operations.empty():
+            print_state(operations.get().state)
+            print()
+            
+    print(total_cost)
 
 """
 def process_input(alg, matrix, is_there_print):
