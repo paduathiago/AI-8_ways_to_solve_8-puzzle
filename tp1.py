@@ -85,7 +85,7 @@ def process_input(alg, matrix, is_there_print):
     if alg == 'A':
         return alg_A(matrix, is_there_print)
     elif alg == 'B':
-    
+        bfs(read_input()[1])
     elif alg == 'G':
     elif alg == 'H':
     elif alg == 'I':
