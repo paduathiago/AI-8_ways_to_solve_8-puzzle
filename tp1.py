@@ -46,6 +46,22 @@ def read_input():
     else:
         return alg, puzzle, is_there_print
 
+def process_input(alg, matrix, is_there_print):
+    root_node = Node(matrix, None, 0, 0)
+    if alg == 'A':
+        pass
+    elif alg == 'B':
+        result = bfs(root_node)
+        print_result(result, is_there_print)
+    elif alg == 'G':
+        pass
+    elif alg == 'H':
+        pass
+    elif alg == 'I':
+        pass
+    elif alg == 'U':
+        pass
+
 def print_state(matrix):
     for i in range(len(matrix)):
         for j in range(len(matrix[i])):
@@ -79,38 +95,23 @@ def bfs(root_node):
     
     return None
 
-def print_result(root_node, is_there_print=False):
+def print_result(result_node, is_there_print=False):
     operations = queue.LifoQueue()
-    node = bfs(root_node)
-    total_cost = node.cost
+    total_cost = result_node.cost
+    current_node = result_node
     
     if is_there_print:
-        while node != None:
-            operations.put(node)
-            node = node.parent
+        while current_node != None:
+            operations.put(current_node)
+            current_node = current_node.parent
         while not operations.empty():
             print_state(operations.get().state)
             print()
-            
+
     print(total_cost)
 
-"""
-def process_input(alg, matrix, is_there_print):
-    if alg == 'A':
-        return alg_A(matrix, is_there_print)
-    elif alg == 'B':
-        bfs(read_input()[1])
-    elif alg == 'G':
-    elif alg == 'H':
-    elif alg == 'I':
-    elif alg == 'U':
-"""
-read_input_A = read_input()
-root_node = Node(read_input()[1], None, 0, 0)
-"""print_state(read_input_A[1])
-print("-----", end='\n\n')
-for i in root_node.generate_childen_nodes():
-    print_state(i.state)
-    print("-----")"""
 
-print_result(root_node, is_there_print=read_input_A[2])
+def main():
+    process_input(*read_input())
+
+main()
