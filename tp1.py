@@ -63,18 +63,19 @@ def process_input(alg, matrix, is_there_print):
         pass
     elif alg == 'B':
         result = bfs(root_node)
-        print_result(result, is_there_print)
     elif alg == 'G':
         pass
     elif alg == 'H':
         pass
     elif alg == 'I':
-        pass
+        result = iterative_deepening_search(root_node)
     elif alg == 'U':
-        result = uniform_cost_search(root_node)
-        print_result(result, is_there_print)
+        result = uniform_cost_search(root_node)  
     else:
         print("invalid algorithm")
+        return
+    
+    print_result(result, is_there_print)
 
 
 def print_state(matrix):
@@ -119,7 +120,7 @@ def uniform_cost_search(root_node):
     heapq.heapify(frontier)
     explored = []
 
-    while len(frontier) > 0:
+    while frontier:  # while frontier is not empty
         current_node = heapq.heappop(frontier)
         if is_goal(current_node):
             return current_node
@@ -139,6 +140,46 @@ def uniform_cost_search(root_node):
                             heapq.heappush(frontier, child)
 
     return None
+
+def is_cycle(node):
+    current_node = node.parent
+    
+    while current_node != None:
+        if np.array_equal(node.state, current_node.state):
+            return True
+        current_node = current_node.parent
+    
+    return False
+
+
+def iterative_deepening_search(root_node):
+    depth = 0
+    while True:
+        result = depth_limited_search(root_node, depth)
+        if result != 'cutoff':
+            return result
+        depth += 1
+
+
+def depth_limited_search(root_node, limit):
+    frontier = queue.LifoQueue()
+    frontier.put(root_node)
+    result = 'failure'
+
+    while not frontier.empty():
+        current_node = frontier.get()
+        
+        if is_goal(current_node):
+            return current_node
+        
+        if current_node.depth > limit:
+            result = 'cutoff'
+        elif not is_cycle(current_node):
+            for child in current_node.generate_childen_nodes():
+                frontier.put(child)
+    
+    return result
+            
 
 
 def print_result(result_node, is_there_print=False):
