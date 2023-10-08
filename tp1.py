@@ -57,7 +57,7 @@ def read_input():
         return alg, puzzle, is_there_print
 
 
-def process_input(alg, matrix, is_there_print):
+def process_input(alg, matrix, is_there_print):  # Refactor: print result in main
     root_node = Node(matrix, None, 0, 0)
     if alg == 'A':
         pass
@@ -88,7 +88,7 @@ def print_state(matrix):
         print()
 
 
-def is_goal(node):
+def is_goal(node):  # Check if there are any other goal states
     goal = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 0]])
     return np.array_equal(node.state, goal)
 
@@ -141,6 +141,7 @@ def uniform_cost_search(root_node):
 
     return None
 
+
 def is_cycle(node):
     current_node = node.parent
     
@@ -181,6 +182,24 @@ def depth_limited_search(root_node, limit):
     return result
             
 
+def misplaced_tiles_heuristic(state):
+    goal = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 0]])
+    return np.count_nonzero(state != goal)
+
+
+def manhattan_distance_heuristic(state):
+    goal = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 0]])
+    distance = 0
+    for i in range(len(state)):
+        for j in range(len(state[i])):
+            if state[i][j] != 0:
+                distance += np.sum(np.abs(np.subtract(np.where(state == state[i][j]), np.where(goal == state[i][j]))))
+    return distance
+
+
+def a_star_search(root_node):
+    pass
+
 
 def print_result(result_node, is_there_print=False):
     operations = queue.LifoQueue()
@@ -202,4 +221,5 @@ def main():
     process_input(*read_input())
 
 
-main()
+# main()
+print(f" oii {misplaced_tiles_heuristic(np.array([[1, 2, 3], [4, 0, 5], [7, 8, 6]]))}")
