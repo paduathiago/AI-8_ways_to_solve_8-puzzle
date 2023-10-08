@@ -45,6 +45,26 @@ class Node:
                         children_nodes[-1].state[i][j+1] = 0
                     return children_nodes
 
+class InformedNode(Node):
+    def __init__(self, matrix, parent, depth, cost, heuristic):
+        super().__init__(matrix, parent, depth, cost)
+        self.heuristic = heuristic
+    
+
+    def __lt__(self, other):
+        return super().__lt__(other)
+
+
+    def generate_childen_nodes(self):
+        children_nodes = super().generate_childen_nodes()
+        
+        for child in children_nodes:
+            child.__class__ = InformedNode
+            child.heuristic = self.heuristic
+            child.cost = self.heuristic(child.state)
+        
+        return children_nodes
+        
 
 def read_input():
     alg = sys.argv[1]
@@ -64,7 +84,8 @@ def process_input(alg, matrix, is_there_print):  # Refactor: print result in mai
     elif alg == 'B':
         result = bfs(root_node)
     elif alg == 'G':
-        pass
+        root_node = InformedNode(matrix, None, 0, 0, misplaced_tiles_heuristic)
+        result = greedy_best_first_search(root_node)
     elif alg == 'H':
         pass
     elif alg == 'I':
@@ -190,12 +211,18 @@ def misplaced_tiles_heuristic(state):
 def manhattan_distance_heuristic(state):
     goal = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 0]])
     distance = 0
+    
     for i in range(len(state)):
         for j in range(len(state[i])):
             if state[i][j] != 0:
                 distance += np.sum(np.abs(np.subtract(np.where(state == state[i][j]), np.where(goal == state[i][j]))))
+    
     return distance
 
+
+def greedy_best_first_search(root_node):
+    return uniform_cost_search(root_node)
+        
 
 def a_star_search(root_node):
     pass
@@ -203,7 +230,7 @@ def a_star_search(root_node):
 
 def print_result(result_node, is_there_print=False):
     operations = queue.LifoQueue()
-    total_cost = result_node.cost
+    total_cost = result_node.depth
     current_node = result_node
 
     if is_there_print:
@@ -214,12 +241,11 @@ def print_result(result_node, is_there_print=False):
             print_state(operations.get().state)
             print()
 
-    print(total_cost)
+    print(total_cost, end='\n')
 
 
 def main():
     process_input(*read_input())
 
 
-# main()
-print(f" oii {misplaced_tiles_heuristic(np.array([[1, 2, 3], [4, 0, 5], [7, 8, 6]]))}")
+main()
