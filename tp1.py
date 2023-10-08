@@ -61,7 +61,7 @@ class InformedNode(Node):
         for child in children_nodes:
             child.__class__ = InformedNode
             child.heuristic = self.heuristic
-            child.cost = self.heuristic(child.state)
+            child.cost = self.heuristic(child)
         
         return children_nodes
         
@@ -80,7 +80,8 @@ def read_input():
 def process_input(alg, matrix, is_there_print):  # Refactor: print result in main
     root_node = Node(matrix, None, 0, 0)
     if alg == 'A':
-        pass
+        root_node = InformedNode(matrix, None, 0, 0, manhattan_distance_heuristic)
+        result = a_star_search(root_node)
     elif alg == 'B':
         result = bfs(root_node)
     elif alg == 'G':
@@ -203,21 +204,22 @@ def depth_limited_search(root_node, limit):
     return result
             
 
-def misplaced_tiles_heuristic(state):
+def misplaced_tiles_heuristic(node):
     goal = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 0]])
-    return np.count_nonzero(state != goal)
+    return np.count_nonzero(node.state != goal)
 
 
-def manhattan_distance_heuristic(state):
+def manhattan_distance_heuristic(node):
     goal = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 0]])
     distance = 0
     
-    for i in range(len(state)):
-        for j in range(len(state[i])):
-            if state[i][j] != 0:
-                distance += np.sum(np.abs(np.subtract(np.where(state == state[i][j]), np.where(goal == state[i][j]))))
+    for i in range(len(node.state)):
+        for j in range(len(node.state[i])):
+            if node.state[i][j] != 0:
+                distance += np.sum(np.abs(np.subtract(np.where(node.state == node.state[i][j]), np.where(goal == node.state[i][j]))))
     
-    return distance
+    # f(n) = g(n) + h(n), where g(n) is the depth(real cost to get to the current node) and h(n) is the heuristic
+    return node.depth + distance  
 
 
 def greedy_best_first_search(root_node):
@@ -225,7 +227,7 @@ def greedy_best_first_search(root_node):
         
 
 def a_star_search(root_node):
-    pass
+    return uniform_cost_search(root_node)
 
 
 def print_result(result_node, is_there_print=False):
