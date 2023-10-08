@@ -12,5 +12,9 @@ This project implements and compairs different seach methods applied to the 8-pu
 - A* search
 - Greedy best-first search
 
+Each informed search algorithm uses the following heuristics:
+- Number of misplaced tiles
+- Manhattan distance
+
 ### Local Search
 - Hill Climbing
