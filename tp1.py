@@ -45,14 +45,11 @@ class Node:
                         children_nodes[-1].state[i][j+1] = 0
                     return children_nodes
 
+
 class InformedNode(Node):
     def __init__(self, matrix, parent, depth, cost, heuristic):
         super().__init__(matrix, parent, depth, cost)
         self.heuristic = heuristic
-    
-
-    def __lt__(self, other):
-        return super().__lt__(other)
 
 
     def generate_childen_nodes(self):
@@ -88,7 +85,7 @@ def process_input(alg, matrix, is_there_print):  # Refactor: print result in mai
         root_node = InformedNode(matrix, None, 0, 0, misplaced_tiles_heuristic)
         result = greedy_best_first_search(root_node)
     elif alg == 'H':
-        pass
+        result = hill_climbing_search(root_node)
     elif alg == 'I':
         result = iterative_deepening_search(root_node)
     elif alg == 'U':
@@ -228,6 +225,26 @@ def greedy_best_first_search(root_node):
 
 def a_star_search(root_node):
     return uniform_cost_search(root_node)
+
+
+def best_neighbor(node):
+    neighbors = node.generate_childen_nodes()
+    best_neighbor = min(neighbors)
+    return best_neighbor
+
+def hill_climbing_search(root_node):
+    current_node = root_node
+    
+    same_cost_count = 0
+    while same_cost_count <= 3:
+        neighbor = best_neighbor(current_node)
+        if neighbor.cost > current_node.cost:
+            return current_node
+        elif neighbor.cost == current_node.cost:
+            same_cost_count += 1
+        current_node = neighbor
+    
+    return current_node
 
 
 def print_result(result_node, is_there_print=False):
