@@ -37,13 +37,13 @@ Where:
 
 Example:
 ```
-    python3 tp1.py H 1 2 3 4 0 5 7 8 6 PRINT
+python3 tp1.py H 1 2 3 4 0 5 7 8 6 PRINT
 ```
-    The above represents the following board:
-    
-    1 2 3
-    4 0 5
-    7 8 6
+The above represents the following board:
 
-    which will be solved using the Hill Climbing algorithm and the solution path will be printed.
+1 2 3
+4   5
+7 8 6
+
+which will be solved using the Hill Climbing algorithm and the solution path will be printed.
 
