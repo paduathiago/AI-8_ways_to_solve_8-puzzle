@@ -66,15 +66,15 @@ class InformedNode(Node):
 def read_input():
     alg = sys.argv[1]
     puzzle = np.array(sys.argv[2:11]).reshape(3, 3).astype(int)
-    is_there_print = sys.argv[11] if len(sys.argv) == 12 else False
-    if is_there_print != 'PRINT':
+    is_there_print = True if len(sys.argv) == 12 else False
+    if len(sys.argv) == 12 and sys.argv[11] != 'PRINT':
         print("invalid command line arguments")
         return None
     else:
         return alg, puzzle, is_there_print
 
 
-def process_input(alg, matrix, is_there_print):  # Refactor: print result in main
+def process_input(alg, matrix):  # Refactor: print result in main
     root_node = Node(matrix, None, 0, 0)
     if alg == 'A':
         root_node = InformedNode(matrix, None, 0, 0, manhattan_distance_heuristic)
@@ -92,9 +92,9 @@ def process_input(alg, matrix, is_there_print):  # Refactor: print result in mai
         result = uniform_cost_search(root_node)  
     else:
         print("invalid algorithm")
-        return
+        return None
     
-    print_result(result, is_there_print)
+    return result
 
 
 def print_state(matrix):
@@ -265,7 +265,9 @@ def print_result(result_node, is_there_print=False):
 
 
 def main():
-    process_input(*read_input())
+    alg, puzzle, is_there_print = read_input()
+    result = process_input(alg, puzzle)
+    print_result(result, is_there_print)
 
 
 main()
