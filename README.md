@@ -39,7 +39,6 @@ Example:
 ```
     python3 tp1.py H 1 2 3 4 0 5 7 8 6 PRINT
     
-```
     The above represents the following board:
     
     1 2 3
