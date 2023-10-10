@@ -232,6 +232,7 @@ def best_neighbor(node):
     best_neighbor = min(neighbors)
     return best_neighbor
 
+
 def hill_climbing_search(root_node):
     current_node = root_node
     
@@ -252,6 +253,8 @@ def print_result(result_node, is_there_print=False):
     total_cost = result_node.depth
     current_node = result_node
 
+    print(total_cost, end='\n\n')
+
     if is_there_print:
         while current_node != None:
             operations.put(current_node)
@@ -259,8 +262,6 @@ def print_result(result_node, is_there_print=False):
         while not operations.empty():
             print_state(operations.get().state)
             print()
-
-    print(total_cost, end='\n')
 
 
 def main():
