@@ -14,36 +14,21 @@ class Node:
     def __lt__(self, other):
         return self.cost < other.cost
 
-    def generate_childen_nodes(self):
+    def generate_children_nodes(self):
         children_nodes = []
-        for i in range(len(self.state)):
-            for j in range(len(self.state[i])):
-                if self.state[i][j] == 0:
-                    if i > 0:
-                        new_node = Node(np.copy(self.state),
-                                        self, self.depth + 1, self.cost + 1)
-                        children_nodes.append(new_node)
-                        children_nodes[-1].state[i][j] = children_nodes[-1].state[i-1][j]
-                        children_nodes[-1].state[i-1][j] = 0
-                    if i < len(self.state) - 1:
-                        new_node = Node(np.copy(self.state),
-                                        self, self.depth + 1, self.cost + 1)
-                        children_nodes.append(new_node)
-                        children_nodes[-1].state[i][j] = children_nodes[-1].state[i+1][j]
-                        children_nodes[-1].state[i+1][j] = 0
-                    if j > 0:
-                        new_node = Node(np.copy(self.state),
-                                        self, self.depth + 1, self.cost + 1)
-                        children_nodes.append(new_node)
-                        children_nodes[-1].state[i][j] = children_nodes[-1].state[i][j-1]
-                        children_nodes[-1].state[i][j-1] = 0
-                    if j < len(self.state[i]) - 1:
-                        new_node = Node(np.copy(self.state),
-                                        self, self.depth + 1, self.cost + 1)
-                        children_nodes.append(new_node)
-                        children_nodes[-1].state[i][j] = children_nodes[-1].state[i][j+1]
-                        children_nodes[-1].state[i][j+1] = 0
-                    return children_nodes
+        i, j = np.where(self.state == 0)
+        i, j = i[0], j[0]
+
+        moves = [(i-1, j), (i+1, j), (i, j-1), (i, j+1)]
+        
+        for new_i, new_j in moves:
+            if 0 <= new_i < len(self.state) and 0 <= new_j < len(self.state[0]):
+                new_state = np.copy(self.state)
+                new_state[i][j], new_state[new_i][new_j] = new_state[new_i][new_j], new_state[i][j]
+                new_node = Node(new_state, self, self.depth + 1, self.cost + 1)
+                children_nodes.append(new_node)
+
+        return children_nodes
 
 
 class InformedNode(Node):
@@ -52,8 +37,8 @@ class InformedNode(Node):
         self.heuristic = heuristic
 
 
-    def generate_childen_nodes(self):
-        children_nodes = super().generate_childen_nodes()
+    def generate_children_nodes(self):
+        children_nodes = super().generate_children_nodes()
         
         for child in children_nodes:
             child.__class__ = InformedNode
@@ -123,7 +108,7 @@ def bfs(root_node):
     while not frontier.empty():
         current_node = frontier.get()
         explored.append(current_node.state)
-        children_nodes = current_node.generate_childen_nodes()
+        children_nodes = current_node.generate_children_nodes()
         for child in children_nodes:
             if not any(np.all(np.equal(child.state, element)) for element in explored) and \
             not any(np.all(np.equal(child.state, node.state)) for node in frontier.queue):
@@ -145,7 +130,7 @@ def uniform_cost_search(root_node):
             return current_node
         
         explored.append(current_node.state)
-        children_nodes = current_node.generate_childen_nodes()
+        children_nodes = current_node.generate_children_nodes()
         
         for child in children_nodes:
             if not any(np.all(np.equal(child.state, element)) for element in explored) and \
@@ -195,7 +180,7 @@ def depth_limited_search(root_node, limit):
         if current_node.depth > limit:
             result = 'cutoff'
         elif not is_cycle(current_node):
-            for child in current_node.generate_childen_nodes():
+            for child in current_node.generate_children_nodes():
                 frontier.put(child)
     
     return result
@@ -229,7 +214,7 @@ def a_star_search(root_node):
 
 
 def best_neighbor(node):
-    neighbors = node.generate_childen_nodes()
+    neighbors = node.generate_children_nodes()
     best_neighbor = min(neighbors)
     return best_neighbor
 
