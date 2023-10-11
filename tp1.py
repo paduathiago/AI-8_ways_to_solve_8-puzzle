@@ -201,9 +201,10 @@ def depth_limited_search(root_node, limit):
     return result
             
 
-def misplaced_tiles_heuristic(node):
+def misplaced_tiles_heuristic(state):
     goal = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 0]])
-    return np.count_nonzero(node.state != goal) - 1
+    mask = state != 0
+    return np.count_nonzero(mask & (state != goal)) 
 
 
 def manhattan_distance_heuristic(node):
