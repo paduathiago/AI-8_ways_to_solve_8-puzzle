@@ -35,6 +35,7 @@ class InformedNode(Node):
     def __init__(self, matrix, parent, depth, cost, heuristic):
         super().__init__(matrix, parent, depth, cost)
         self.heuristic = heuristic
+        self.cost = self.heuristic(self)
 
 
     def generate_children_nodes(self):
@@ -67,7 +68,7 @@ def process_input(alg, matrix):
     elif alg == 'B':
         result = bfs(root_node)
     elif alg == 'G':
-        root_node = InformedNode(matrix, None, 0, 0, misplaced_tiles_heuristic)
+        root_node = InformedNode(matrix, None, 0, 0, misplaced_tiles_heuristic)  # pROBLEMA
         result = greedy_best_first_search(root_node)
     elif alg == 'H':
         root_node = InformedNode(matrix, None, 0, 0, manhattan_distance_heuristic)
@@ -187,10 +188,10 @@ def depth_limited_search(root_node, limit):
     return result
             
 
-def misplaced_tiles_heuristic(state):
+def misplaced_tiles_heuristic(node):
     goal = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 0]])
-    mask = state != 0
-    return np.count_nonzero(mask & (state != goal)) 
+    mask = node.state != 0
+    return np.count_nonzero(mask & (node.state != goal)) 
 
 
 def manhattan_distance_heuristic(node):
@@ -222,7 +223,7 @@ def best_neighbor(node):
 
 def hill_climbing_search(root_node):
     current_node = root_node
-    
+
     same_cost_count = 0
     while same_cost_count <= 3:
         neighbor = best_neighbor(current_node)
