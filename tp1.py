@@ -59,7 +59,7 @@ def read_input():
         return alg, puzzle, is_there_print
 
 
-def process_input(alg, matrix):  # Refactor: print result in main
+def process_input(alg, matrix):
     root_node = Node(matrix, None, 0, 0)
     if alg == 'A':
         root_node = InformedNode(matrix, None, 0, 0, manhattan_distance_heuristic)
@@ -70,6 +70,7 @@ def process_input(alg, matrix):  # Refactor: print result in main
         root_node = InformedNode(matrix, None, 0, 0, misplaced_tiles_heuristic)
         result = greedy_best_first_search(root_node)
     elif alg == 'H':
+        root_node = InformedNode(matrix, None, 0, 0, manhattan_distance_heuristic)
         result = hill_climbing_search(root_node)
     elif alg == 'I':
         result = iterative_deepening_search(root_node)
@@ -92,7 +93,7 @@ def print_state(matrix):
         print()
 
 
-def is_goal(node):  # Check if there are any other goal states
+def is_goal(node): 
     goal = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 0]])
     return np.array_equal(node.state, goal)
 
