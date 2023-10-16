@@ -74,7 +74,7 @@ def process_input(alg, matrix):
     elif alg == 'B':
         result = bfs(root_node)
     elif alg == 'G':
-        root_node = InformedNode(matrix, None, 0, 0, misplaced_tiles_heuristic)  # pROBLEMA
+        root_node = InformedNode(matrix, None, 0, 0, misplaced_tiles_heuristic) 
         result = greedy_best_first_search(root_node)
     elif alg == 'H':
         root_node = InformedNode(matrix, None, 0, 0, manhattan_distance_heuristic)
@@ -223,25 +223,47 @@ def a_star_search(root_node):
 
 
 def best_neighbor(node):
+    best_neighbors = []
     neighbors = node.generate_children_nodes()
-    best_neighbor = min(neighbors)
-    return best_neighbor
+    neighbors.sort(key=lambda x: x.cost)
+    for i in range(len(neighbors)):
+        if i > 0:
+            if neighbors[i].cost > neighbors[i-1].cost:
+                break
+        best_neighbors.append(neighbors[i])
+
+    return best_neighbors
 
 
 def hill_climbing_search(root_node):
     current_node = root_node
-
-    K = 150
+    best_neighbors = []
+    restart_search = False
+    K = 1000
     while K:
-        neighbor = best_neighbor(current_node)
-        neighbor.cost -= neighbor.depth
+        best = best_neighbor(current_node)
+        for i in range(len(best)):
+            best[i].cost -= best[i].depth
+            best_neighbors.append(best[i])
+        
+        if not restart_search:
+            neighbor = best_neighbors.pop(0)
+        else:
+            restart_search = False
+
         if neighbor.cost > current_node.cost:
-            return current_node
+            if is_goal(current_node):
+                return current_node
+            else:
+                neighbor = best_neighbors.pop(0)
+                restart_search = True
+
+                K = 1000
         elif neighbor.cost < current_node.cost:
-            K = 150
+            K = 1000
         elif neighbor.cost == current_node.cost:
             K -= 1
-        current_node = copy.deepcopy(neighbor)
+        current_node = neighbor
         
     
     return current_node
