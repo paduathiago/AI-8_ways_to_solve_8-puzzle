@@ -16,6 +16,8 @@ class Node:
         return self.cost < other.cost
 
     def __eq__(self, other):
+        if other.__class__ != self.__class__:
+            return False
         return np.array_equal(self.state, other.state)
 
     def generate_children_nodes(self):
@@ -104,7 +106,6 @@ def is_goal(node):
 
 
 def bfs(root_node):
-    count_explored = 0
     if is_goal(root_node):
         return root_node
 
@@ -115,15 +116,14 @@ def bfs(root_node):
     while not frontier.empty():
         current_node = frontier.get()
         explored.append(current_node)
-        count_explored += 1
         children_nodes = current_node.generate_children_nodes()
         for child in children_nodes:
             if not child in explored and not child in frontier.queue:
                 if is_goal(child):
-                    return child, count_explored
+                    return child, len(explored)
                 frontier.put(child)
 
-    return None
+    return None, len(explored)
 
 
 def uniform_cost_search(root_node):
@@ -134,7 +134,7 @@ def uniform_cost_search(root_node):
     while frontier:  # while frontier is not empty
         current_node = heapq.heappop(frontier)
         if is_goal(current_node):
-            return current_node
+            return current_node, len(explored)
         
         explored.append(current_node.state)
         children_nodes = current_node.generate_children_nodes()
@@ -165,24 +165,28 @@ def is_cycle(node):
 
 
 def iterative_deepening_search(root_node):
+    count_explored = 0
     depth = 0
     while True:
-        result = depth_limited_search(root_node, depth)
+        result, new_explored  = depth_limited_search(root_node, depth)
         if result != 'cutoff':
-            return result
+            return result, count_explored + new_explored
         depth += 1
+        count_explored += new_explored
 
 
 def depth_limited_search(root_node, limit):
+    new_explored = 0
     frontier = queue.LifoQueue()
     frontier.put(root_node)
     result = 'failure'
 
     while not frontier.empty():
         current_node = frontier.get()
+        new_explored += 1
         
         if is_goal(current_node):
-            return current_node
+            return current_node, new_explored
         
         if current_node.depth > limit:
             result = 'cutoff'
@@ -190,7 +194,7 @@ def depth_limited_search(root_node, limit):
             for child in current_node.generate_children_nodes():
                 frontier.put(child)
     
-    return result
+    return result, new_explored
             
 
 def misplaced_tiles_heuristic(node):
