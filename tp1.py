@@ -233,22 +233,39 @@ def best_neighbor(node):
 
 
 def hill_climbing_search(root_node):
+    count_explored = 0
     current_node = root_node
-
-    K = 150
+    best_neighbors = []
+    restart_search = False
+    K = 1000
     while K:
-        neighbor = best_neighbor(current_node)
-        neighbor.cost -= neighbor.depth
+        best = best_neighbor(current_node)
+        count_explored += 1
+        for i in range(len(best)):
+            best[i].cost -= best[i].depth
+            best_neighbors.append(best[i])
+        
+        if not restart_search:
+            neighbor = best_neighbors.pop(0)
+        else:
+            restart_search = False
+
         if neighbor.cost > current_node.cost:
-            return current_node
+            if is_goal(current_node):
+                return current_node, count_explored
+            else:
+                neighbor = best_neighbors.pop(0)
+                restart_search = True
+
+                K = 1000
         elif neighbor.cost < current_node.cost:
-            K = 150
+            K = 1000
         elif neighbor.cost == current_node.cost:
             K -= 1
-        current_node = copy.deepcopy(neighbor)
+        current_node = neighbor
         
     
-    return current_node
+    return current_node, count_explored
 
 
 def print_result(result_node, explored, is_there_print=False):
