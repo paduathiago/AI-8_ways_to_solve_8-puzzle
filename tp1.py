@@ -227,9 +227,16 @@ def a_star_search(root_node):
 
 
 def best_neighbor(node):
+    best_neighbors = []
     neighbors = node.generate_children_nodes()
-    best_neighbor = min(neighbors)
-    return best_neighbor
+    neighbors.sort(key=lambda x: x.cost)
+    for i in range(len(neighbors)):
+        if i > 0:
+            if neighbors[i].cost > neighbors[i-1].cost:
+                break
+        best_neighbors.append(neighbors[i])
+
+    return best_neighbors
 
 
 def hill_climbing_search(root_node):
