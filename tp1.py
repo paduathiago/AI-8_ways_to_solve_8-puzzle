@@ -16,6 +16,8 @@ class Node:
         return self.cost < other.cost
 
     def __eq__(self, other):
+        if other.__class__ != self.__class__:
+            return False
         return np.array_equal(self.state, other.state)
 
     def generate_children_nodes(self):
