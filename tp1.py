@@ -68,24 +68,24 @@ def process_input(alg, matrix):
     root_node = Node(matrix, None, 0, 0)
     if alg == 'A':
         root_node = InformedNode(matrix, None, 0, 0, manhattan_distance_heuristic)
-        result = a_star_search(root_node)
+        result, explored = a_star_search(root_node)
     elif alg == 'B':
-        result = bfs(root_node)
+        result, explored = bfs(root_node)
     elif alg == 'G':
         root_node = InformedNode(matrix, None, 0, 0, misplaced_tiles_heuristic)  # pROBLEMA
-        result = greedy_best_first_search(root_node)
+        result, explored = greedy_best_first_search(root_node)
     elif alg == 'H':
         root_node = InformedNode(matrix, None, 0, 0, manhattan_distance_heuristic)
-        result = hill_climbing_search(root_node)
+        result, explored = hill_climbing_search(root_node)
     elif alg == 'I':
-        result = iterative_deepening_search(root_node)
+        result, explored = iterative_deepening_search(root_node)
     elif alg == 'U':
-        result = uniform_cost_search(root_node)  
+        result, explored = uniform_cost_search(root_node)  
     else:
         print("invalid algorithm")
         return None
     
-    return result
+    return result, explored
 
 
 def print_state(matrix):
@@ -104,6 +104,7 @@ def is_goal(node):
 
 
 def bfs(root_node):
+    count_explored = 0
     if is_goal(root_node):
         return root_node
 
@@ -114,11 +115,12 @@ def bfs(root_node):
     while not frontier.empty():
         current_node = frontier.get()
         explored.append(current_node)
+        count_explored += 1
         children_nodes = current_node.generate_children_nodes()
         for child in children_nodes:
             if not child in explored and not child in frontier.queue:
                 if is_goal(child):
-                    return child
+                    return child, count_explored
                 frontier.put(child)
 
     return None
@@ -243,12 +245,12 @@ def hill_climbing_search(root_node):
     return current_node
 
 
-def print_result(result_node, is_there_print=False):
+def print_result(result_node, explored, is_there_print=False):
     operations = queue.LifoQueue()
     total_cost = result_node.depth
     current_node = result_node
 
-    print(total_cost, end='\n\n')
+    print(total_cost, explored, end='\n')
 
     if is_there_print:
         while current_node != None:
@@ -261,8 +263,8 @@ def print_result(result_node, is_there_print=False):
 
 def main():
     alg, puzzle, is_there_print = read_input()
-    result = process_input(alg, puzzle)
-    print_result(result, is_there_print)
+    result, explored = process_input(alg, puzzle)
+    print_result(result, explored, is_there_print)
 
 
 main()
