@@ -2,6 +2,7 @@ import sys
 import numpy as np
 import queue
 import heapq
+import copy
 
 
 class Node:
@@ -13,6 +14,9 @@ class Node:
 
     def __lt__(self, other):
         return self.cost < other.cost
+
+    def __eq__(self, other):
+        return np.array_equal(self.state, other.state)
 
     def generate_children_nodes(self):
         children_nodes = []
@@ -44,7 +48,7 @@ class InformedNode(Node):
         for child in children_nodes:
             child.__class__ = InformedNode
             child.heuristic = self.heuristic
-            child.cost = self.heuristic(child)
+            child.cost = child.heuristic(child)
         
         return children_nodes
         
@@ -109,11 +113,10 @@ def bfs(root_node):
 
     while not frontier.empty():
         current_node = frontier.get()
-        explored.append(current_node.state)
+        explored.append(current_node)
         children_nodes = current_node.generate_children_nodes()
         for child in children_nodes:
-            if not any(np.all(np.equal(child.state, element)) for element in explored) and \
-            not any(np.all(np.equal(child.state, node.state)) for node in frontier.queue):
+            if not child in explored and not child in frontier.queue:
                 if is_goal(child):
                     return child
                 frontier.put(child)
@@ -224,14 +227,18 @@ def best_neighbor(node):
 def hill_climbing_search(root_node):
     current_node = root_node
 
-    same_cost_count = 0
-    while same_cost_count <= 3:
+    K = 150
+    while K:
         neighbor = best_neighbor(current_node)
+        neighbor.cost -= neighbor.depth
         if neighbor.cost > current_node.cost:
             return current_node
+        elif neighbor.cost < current_node.cost:
+            K = 150
         elif neighbor.cost == current_node.cost:
-            same_cost_count += 1
-        current_node = neighbor
+            K -= 1
+        current_node = copy.deepcopy(neighbor)
+        
     
     return current_node
 
