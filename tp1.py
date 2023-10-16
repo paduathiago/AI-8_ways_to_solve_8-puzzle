@@ -107,7 +107,7 @@ def is_goal(node):
 
 def bfs(root_node):
     if is_goal(root_node):
-        return root_node
+        return root_node, 0
 
     frontier = queue.Queue()
     explored = []
@@ -123,7 +123,7 @@ def bfs(root_node):
                     return child, len(explored)
                 frontier.put(child)
 
-    return None, len(explored)
+    return None
 
 
 def uniform_cost_search(root_node):
