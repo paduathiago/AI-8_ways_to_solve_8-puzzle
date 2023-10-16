@@ -136,19 +136,21 @@ def uniform_cost_search(root_node):
         if is_goal(current_node):
             return current_node, len(explored)
         
-        explored.append(current_node.state)
+        explored.append(current_node)
         children_nodes = current_node.generate_children_nodes()
         
-        for child in children_nodes:
-            if not any(np.all(np.equal(child.state, element)) for element in explored) and \
-            not any(np.all(np.equal(child.state, node.state)) for node in frontier):
+        for child in children_nodes:           
+            try:
+                child_index = frontier.index(child)
+            except ValueError:
+                child_index = -1
+            
+            if not child in explored and child_index == -1:
                 heapq.heappush(frontier, child)
-            elif any(np.all(np.equal(child.state, node.state)) for node in frontier):
-                for node in frontier:
-                    if np.all(np.equal(child.state, node.state)):
-                        if child.cost < node.cost:
-                            frontier.remove(node)
-                            heapq.heappush(frontier, child)
+            elif child_index != -1:
+                if child.cost < frontier[child_index].cost:
+                    frontier.pop(child_index)
+                    heapq.heappush(frontier, child)
 
     return None
 
