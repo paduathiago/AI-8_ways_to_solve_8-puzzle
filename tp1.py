@@ -227,52 +227,9 @@ def a_star_search(root_node):
 
 
 def best_neighbor(node):
-    best_neighbors = []
     neighbors = node.generate_children_nodes()
-    neighbors.sort(key=lambda x: x.cost)
-    for i in range(len(neighbors)):
-        if i > 0:
-            if neighbors[i].cost > neighbors[i-1].cost:
-                break
-        best_neighbors.append(neighbors[i])
-
-    return best_neighbors
-
-
-def hill_climbing_search(root_node):
-    count_explored = 0
-    current_node = root_node
-    best_neighbors = []
-    restart_search = False
-    K = 1000
-    while K:
-        best = best_neighbor(current_node)
-        count_explored += 1
-        for i in range(len(best)):
-            best[i].cost -= best[i].depth
-            best_neighbors.append(best[i])
-        
-        if not restart_search:
-            neighbor = best_neighbors.pop(0)
-        else:
-            restart_search = False
-
-        if neighbor.cost > current_node.cost:
-            if is_goal(current_node):
-                return current_node, count_explored
-            else:
-                neighbor = best_neighbors.pop(0)
-                restart_search = True
-
-                K = 1000
-        elif neighbor.cost < current_node.cost:
-            K = 1000
-        elif neighbor.cost == current_node.cost:
-            K -= 1
-        current_node = neighbor
-        
-    
-    return current_node, count_explored
+    best_neighbor = min(neighbors)
+    return best_neighbor
 
 def hill_climbing_search(root_node):
     current_node = root_node
@@ -282,8 +239,9 @@ def hill_climbing_search(root_node):
         neighbor = best_neighbor(current_node)
         count_explored += 1
         neighbor.cost -= neighbor.depth
+
         if neighbor.cost > current_node.cost:
-            return current_node
+            return current_node, count_explored
         elif neighbor.cost < current_node.cost:
             K = 150
         elif neighbor.cost == current_node.cost:
@@ -291,7 +249,7 @@ def hill_climbing_search(root_node):
         current_node = copy.deepcopy(neighbor)
         
     
-    return current_node
+    return current_node, count_explored
 
 
 def print_result(result_node, explored, is_there_print=False):
