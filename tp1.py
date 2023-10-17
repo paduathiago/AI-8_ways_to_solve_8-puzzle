@@ -274,6 +274,25 @@ def hill_climbing_search(root_node):
     
     return current_node, count_explored
 
+def hill_climbing_search(root_node):
+    current_node = root_node
+    count_explored = 0
+    K = 150
+    while K:
+        neighbor = best_neighbor(current_node)
+        count_explored += 1
+        neighbor.cost -= neighbor.depth
+        if neighbor.cost > current_node.cost:
+            return current_node
+        elif neighbor.cost < current_node.cost:
+            K = 150
+        elif neighbor.cost == current_node.cost:
+            K -= 1
+        current_node = copy.deepcopy(neighbor)
+        
+    
+    return current_node
+
 
 def print_result(result_node, explored, is_there_print=False):
     operations = queue.LifoQueue()
